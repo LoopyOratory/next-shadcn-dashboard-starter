@@ -199,4 +199,19 @@
   --shadow-2xl: var(--shadow-2xl, 0 25px 50px -12px rgb(0 0 0 / 0.25));
 }
 
+/* Subtle glass translucency — applied to all themes (individual themes override with stronger values) */
+[data-theme] [data-slot='card'],
+[data-theme] [role='dialog'],
+[data-theme] [data-slot='sidebar'],
+[data-theme] [data-slot='dropdown-content'],
+[data-theme] [data-slot='popover-content'],
+[data-theme] [data-slot='select-content'],
+[data-theme] [data-slot='command'] {
+  backdrop-filter: blur(4px) saturate(105%);
+}
+
+[data-theme] header {
+  backdrop-filter: blur(2px) saturate(100%);
+}
+
 @import './theme.css';

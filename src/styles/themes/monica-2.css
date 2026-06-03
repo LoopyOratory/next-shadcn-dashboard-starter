@@ -1,29 +1,29 @@
 /* Monica-2 — Glassmorphism Rose Theme, Sharp (shadcn preset b50e9BPSU) */
 
 [data-theme='monica-2'] {
-  /* Glass surfaces — translucent backgrounds with the rose palette */
-  --background: oklch(0.98 0.002 326 / 60%);
+  /* Glass surfaces — highly translucent backgrounds */
+  --background: oklch(0.98 0.002 326 / 35%);
   --foreground: oklch(0.145 0.008 326);
-  --card: oklch(1 0 0 / 55%);
+  --card: oklch(1 0 0 / 30%);
   --card-foreground: oklch(0.145 0.008 326);
-  --popover: oklch(1 0 0 / 70%);
+  --popover: oklch(1 0 0 / 45%);
   --popover-foreground: oklch(0.145 0.008 326);
 
   /* Rose primary */
   --primary: oklch(0.525 0.223 3.958);
   --primary-foreground: oklch(0.971 0.014 343.198);
-  --secondary: oklch(0.967 0.001 286.375 / 70%);
+  --secondary: oklch(0.967 0.001 286.375 / 50%);
   --secondary-foreground: oklch(0.21 0.006 285.885);
-  --muted: oklch(0.96 0.003 325.6 / 60%);
+  --muted: oklch(0.96 0.003 325.6 / 40%);
   --muted-foreground: oklch(0.542 0.034 322.5);
-  --accent: oklch(0.96 0.003 325.6 / 70%);
+  --accent: oklch(0.96 0.003 325.6 / 50%);
   --accent-foreground: oklch(0.212 0.019 322.12);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.971 0.014 343.198);
 
-  /* Glass borders — more visible for depth */
-  --border: oklch(0.922 0.005 325.62 / 50%);
-  --input: oklch(0.922 0.005 325.62 / 40%);
+  /* Glass borders — faint for depth */
+  --border: oklch(0.922 0.005 325.62 / 30%);
+  --input: oklch(0.922 0.005 325.62 / 25%);
   --ring: oklch(0.711 0.019 323.02);
 
   --chart-1: oklch(0.81 0.117 11.638);
@@ -34,13 +34,13 @@
 
   --radius: 0;
 
-  --sidebar: oklch(0.985 0 0 / 50%);
+  --sidebar: oklch(0.985 0 0 / 30%);
   --sidebar-foreground: oklch(0.145 0.008 326);
   --sidebar-primary: oklch(0.592 0.249 0.584);
   --sidebar-primary-foreground: oklch(0.971 0.014 343.198);
-  --sidebar-accent: oklch(0.96 0.003 325.6 / 70%);
+  --sidebar-accent: oklch(0.96 0.003 325.6 / 50%);
   --sidebar-accent-foreground: oklch(0.212 0.019 322.12);
-  --sidebar-border: oklch(0.922 0.005 325.62 / 50%);
+  --sidebar-border: oklch(0.922 0.005 325.62 / 30%);
   --sidebar-ring: oklch(0.711 0.019 323.02);
 
   /* Typography */
@@ -68,6 +68,17 @@
   --spacing: 0.25rem;
 }
 
+/* Sharp radius overrides */
+[data-theme='monica-2'] {
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
+  --radius-xl: 0;
+  --radius-2xl: 0;
+  --radius-3xl: 0;
+  --radius-4xl: 0;
+}
+
 /* Glass backdrop-filter on key surfaces */
 [data-theme='monica-2'] [data-slot='card'],
 [data-theme='monica-2'] [role='dialog'],
@@ -77,36 +88,36 @@
 [data-theme='monica-2'] [data-slot='popover-content'],
 [data-theme='monica-2'] [data-slot='select-content'],
 [data-theme='monica-2'] [data-slot='command'] {
-  backdrop-filter: blur(20px) saturate(120%);
+  backdrop-filter: blur(24px) saturate(130%);
 }
 
 /* Softer glass for header/nav */
 [data-theme='monica-2'] header {
-  backdrop-filter: blur(12px) saturate(100%);
+  backdrop-filter: blur(16px) saturate(110%);
 }
 
 /* Dark mode — deeper glass with darker tints */
 [data-theme='monica-2'].dark {
-  --background: oklch(0.145 0.008 326 / 75%);
+  --background: oklch(0.145 0.008 326 / 45%);
   --foreground: oklch(0.985 0 0);
-  --card: oklch(0.212 0.019 322.12 / 55%);
+  --card: oklch(0.212 0.019 322.12 / 30%);
   --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.212 0.019 322.12 / 70%);
+  --popover: oklch(0.212 0.019 322.12 / 45%);
   --popover-foreground: oklch(0.985 0 0);
 
   --primary: oklch(0.459 0.187 3.815);
   --primary-foreground: oklch(0.971 0.014 343.198);
-  --secondary: oklch(0.274 0.006 286.033 / 60%);
+  --secondary: oklch(0.274 0.006 286.033 / 40%);
   --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.263 0.024 320.12 / 60%);
+  --muted: oklch(0.263 0.024 320.12 / 40%);
   --muted-foreground: oklch(0.711 0.019 323.02);
-  --accent: oklch(0.263 0.024 320.12 / 70%);
+  --accent: oklch(0.263 0.024 320.12 / 50%);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
   --destructive-foreground: oklch(0.971 0.014 343.198);
 
-  --border: oklch(1 0 0 / 12%);
-  --input: oklch(1 0 0 / 15%);
+  --border: oklch(1 0 0 / 8%);
+  --input: oklch(1 0 0 / 10%);
   --ring: oklch(0.542 0.034 322.5);
 
   --chart-1: oklch(0.81 0.117 11.638);
@@ -115,13 +126,13 @@
   --chart-4: oklch(0.514 0.222 16.935);
   --chart-5: oklch(0.455 0.188 13.697);
 
-  --sidebar: oklch(0.212 0.019 322.12 / 55%);
+  --sidebar: oklch(0.212 0.019 322.12 / 30%);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.656 0.241 354.308);
   --sidebar-primary-foreground: oklch(0.971 0.014 343.198);
-  --sidebar-accent: oklch(0.263 0.024 320.12 / 70%);
+  --sidebar-accent: oklch(0.263 0.024 320.12 / 50%);
   --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 12%);
+  --sidebar-border: oklch(1 0 0 / 8%);
   --sidebar-ring: oklch(0.542 0.034 322.5);
 
   --shadow-color: hsl(3 50% 15%);
