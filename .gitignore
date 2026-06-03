@@ -17,6 +17,10 @@ pnpm-lock.yaml
 
 # production
 /build
+/dist
+
+# tanstack
+.tanstack/tmp
 
 # misc
 .DS_Store
