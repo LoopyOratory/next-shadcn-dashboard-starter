@@ -79,6 +79,8 @@ function DataTableToolbarFilter<TData>({ column }: DataTableToolbarFilterProps<T
         case 'text':
           return (
             <Input
+              id={`filter-${column.id}`}
+              name={`filter-${column.id}`}
               placeholder={columnMeta.placeholder ?? columnMeta.label}
               value={(column.getFilterValue() as string) ?? ''}
               onChange={(event) => column.setFilterValue(event.target.value)}
@@ -90,6 +92,8 @@ function DataTableToolbarFilter<TData>({ column }: DataTableToolbarFilterProps<T
           return (
             <div className='relative'>
               <Input
+                id={`filter-${column.id}`}
+                name={`filter-${column.id}`}
                 type='number'
                 inputMode='numeric'
                 placeholder={columnMeta.placeholder ?? columnMeta.label}

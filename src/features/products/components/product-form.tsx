@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { createProductMutation, updateProductMutation } from '../api/mutations';
 import type { Product } from '../api/types';
 import { useMutation } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
+import { useNavigate } from '@tanstack/react-router';
 import { toast } from 'sonner';
 import * as z from 'zod';
 import { productSchema, type ProductFormValues } from '@/features/products/schemas/product';
@@ -19,14 +19,14 @@ export default function ProductForm({
   initialData: Product | null;
   pageTitle: string;
 }) {
-  const router = useRouter();
+  const navigate = useNavigate();
   const isEdit = !!initialData;
 
   const createMutation = useMutation({
     ...createProductMutation,
     onSuccess: () => {
       toast.success('Product created successfully');
-      router.push('/dashboard/product');
+      navigate({ to: '/dashboard/product' });
     },
     onError: () => {
       toast.error('Failed to create product');
@@ -37,7 +37,7 @@ export default function ProductForm({
     ...updateProductMutation,
     onSuccess: () => {
       toast.success('Product updated successfully');
-      router.push('/dashboard/product');
+      navigate({ to: '/dashboard/product' });
     },
     onError: () => {
       toast.error('Failed to update product');
@@ -139,7 +139,7 @@ export default function ProductForm({
             />
 
             <div className='flex justify-end gap-2'>
-              <Button type='button' variant='outline' onClick={() => router.back()}>
+              <Button type='button' variant='outline' onClick={() => navigate({ to: '..' })}>
                 Back
               </Button>
               <form.SubmitButton>{isEdit ? 'Update Product' : 'Add Product'}</form.SubmitButton>

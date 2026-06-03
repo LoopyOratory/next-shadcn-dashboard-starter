@@ -159,6 +159,7 @@ export function DataTableSliderFilter<TData>({ column, title }: DataTableSliderF
             <div className='relative'>
               <Input
                 id={`${id}-from`}
+                name={`${id}-from`}
                 type='number'
                 aria-valuemin={min}
                 aria-valuemax={max}
@@ -183,6 +184,7 @@ export function DataTableSliderFilter<TData>({ column, title }: DataTableSliderF
             <div className='relative'>
               <Input
                 id={`${id}-to`}
+                name={`${id}-to`}
                 type='number'
                 aria-valuemin={min}
                 aria-valuemax={max}

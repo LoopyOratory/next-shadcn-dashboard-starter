@@ -59,6 +59,7 @@ export function ConversationList({ conversations, selectedId, onSelect }: Conver
         />
         <Input
           id='messenger-search'
+          name='messenger-search'
           type='search'
           value={search}
           onChange={(e) => setSearch(e.target.value)}

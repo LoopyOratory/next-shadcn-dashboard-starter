@@ -4,7 +4,7 @@ import { DataTableColumnHeader } from '@/components/ui/table/data-table-column-h
 import type { Product } from '../../api/types';
 import { Column, ColumnDef } from '@tanstack/react-table';
 import { Icons } from '@/components/icons';
-import Image from 'next/image';
+import { Image } from '@unpic/react';
 import { CellAction } from './cell-action';
 import { CATEGORY_OPTIONS } from './options';
 

@@ -5,7 +5,7 @@ import PageContainer from '@/components/layout/page-container';
 import { Button } from '@/components/ui/button';
 import { NotificationCard } from '@/components/ui/notification-card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useRouter } from 'next/navigation';
+import { useNavigate } from '@tanstack/react-router';
 import { useNotificationStore } from '../utils/store';
 
 const actionRoutes: Record<string, string> = {
@@ -18,7 +18,7 @@ const actionRoutes: Record<string, string> = {
 
 export default function NotificationsPage() {
   const { notifications, markAsRead, markAllAsRead, unreadCount } = useNotificationStore();
-  const router = useRouter();
+  const navigate = useNavigate();
   const count = unreadCount();
 
   const unreadNotifications = notifications.filter((n) => n.status === 'unread');
@@ -50,7 +50,7 @@ export default function NotificationsPage() {
               const route = actionRoutes[actionId];
               if (route) {
                 markAsRead(notifId);
-                router.push(route);
+                navigate({ to: route });
               }
             }}
           />

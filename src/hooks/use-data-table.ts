@@ -19,19 +19,10 @@ import {
   getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table';
-import {
-  type Parser,
-  type UseQueryStateOptions,
-  parseAsArrayOf,
-  parseAsInteger,
-  parseAsString,
-  useQueryState,
-  useQueryStates
-} from 'nuqs';
 import * as React from 'react';
+import { useLocation, useNavigate } from '@tanstack/react-router';
 
 import { useDebouncedCallback } from '@/hooks/use-debounced-callback';
-import { getSortingStateParser } from '@/lib/parsers';
 import type { ExtendedColumnSort } from '@/types/data-table';
 
 const PAGE_KEY = 'page';
@@ -66,6 +57,38 @@ interface UseDataTableProps<TData>
   startTransition?: React.TransitionStartFunction;
 }
 
+/**
+ * Read a search param from the current URL.
+ */
+function getSearchParam(searchStr: string, key: string): string | null {
+  const params = new URLSearchParams(searchStr);
+  return params.get(key);
+}
+
+/**
+ * Parse a sorting state string from URL into array form.
+ */
+function parseSorting(value: string): ExtendedColumnSort<any>[] {
+  try {
+    const parsed = JSON.parse(value);
+    if (Array.isArray(parsed)) {
+      return parsed.filter(
+        (item) => item && typeof item.id === 'string' && typeof item.desc === 'boolean'
+      );
+    }
+  } catch {
+    // ignore
+  }
+  return [];
+}
+
+/**
+ * Serialize sorting state to URL string.
+ */
+function serializeSorting(sorting: ExtendedColumnSort<any>[]): string {
+  return JSON.stringify(sorting);
+}
+
 export function useDataTable<TData>(props: UseDataTableProps<TData>) {
   const {
     columns,
@@ -82,17 +105,30 @@ export function useDataTable<TData>(props: UseDataTableProps<TData>) {
     ...tableProps
   } = props;
 
-  const queryStateOptions = React.useMemo<Omit<UseQueryStateOptions<string>, 'parse'>>(
-    () => ({
-      history,
-      scroll,
-      shallow,
-      throttleMs,
-      debounceMs,
-      clearOnDefault,
-      startTransition
-    }),
-    [history, scroll, shallow, throttleMs, debounceMs, clearOnDefault, startTransition]
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // --- Internal URL sync helper ---
+  const replaceUrl = React.useCallback(
+    (searchStr: string) => {
+      const to = `${location.pathname}${searchStr ? `?${searchStr}` : ''}`;
+      if (history === 'push') {
+        navigate({ to, replace: false });
+      } else {
+        navigate({ to, replace: true });
+      }
+    },
+    [location.pathname, history, navigate]
+  );
+
+  const getIntParam = React.useCallback(
+    (key: string, fallback: number): number => {
+      const raw = getSearchParam(location.searchStr, key);
+      if (raw === null) return fallback;
+      const n = parseInt(raw, 10);
+      return Number.isNaN(n) || n < 1 ? fallback : n;
+    },
+    [location.searchStr]
   );
 
   const [rowSelection, setRowSelection] = React.useState<RowSelectionState>(
@@ -105,20 +141,52 @@ export function useDataTable<TData>(props: UseDataTableProps<TData>) {
     initialState?.columnPinning ?? {}
   );
 
-  const [page, setPage] = useQueryState(
-    PAGE_KEY,
-    parseAsInteger.withOptions(queryStateOptions).withDefault(1)
+  // Page state: read from URL, write via navigate
+  const pageFromUrl = getIntParam(PAGE_KEY, 1);
+  const perPageFromUrl = getIntParam(PER_PAGE_KEY, initialState?.pagination?.pageSize ?? 10);
+
+  const [page, setPageState] = React.useState(pageFromUrl);
+  const [perPage, setPerPageState] = React.useState(perPageFromUrl);
+
+  // Sync from URL on location change
+  React.useEffect(() => {
+    setPageState(getIntParam(PAGE_KEY, 1));
+    setPerPageState(getIntParam(PER_PAGE_KEY, initialState?.pagination?.pageSize ?? 10));
+  }, [location.searchStr, getIntParam, initialState?.pagination?.pageSize]);
+
+  const setPage = React.useCallback(
+    (val: number) => {
+      setPageState(val);
+      const params = new URLSearchParams(location.searchStr);
+      if (val === 1 && clearOnDefault) {
+        params.delete(PAGE_KEY);
+      } else {
+        params.set(PAGE_KEY, String(val));
+      }
+      replaceUrl(params.toString());
+    },
+    [location.searchStr, clearOnDefault, replaceUrl]
   );
-  const [perPage, setPerPage] = useQueryState(
-    PER_PAGE_KEY,
-    parseAsInteger
-      .withOptions(queryStateOptions)
-      .withDefault(initialState?.pagination?.pageSize ?? 10)
+
+  const setPerPage = React.useCallback(
+    (val: number) => {
+      setPerPageState(val);
+      const params = new URLSearchParams(location.searchStr);
+      const defaultVal = initialState?.pagination?.pageSize ?? 10;
+      if (val === defaultVal && clearOnDefault) {
+        params.delete(PER_PAGE_KEY);
+      } else {
+        params.set(PER_PAGE_KEY, String(val));
+      }
+      params.delete(PAGE_KEY); // reset page when perPage changes
+      replaceUrl(params.toString());
+    },
+    [location.searchStr, clearOnDefault, initialState?.pagination?.pageSize, replaceUrl]
   );
 
   const pagination: PaginationState = React.useMemo(() => {
     return {
-      pageIndex: page - 1, // zero-based index -> one-based index
+      pageIndex: page - 1, // zero-based index
       pageSize: perPage
     };
   }, [page, perPage]);
@@ -127,11 +195,11 @@ export function useDataTable<TData>(props: UseDataTableProps<TData>) {
     (updaterOrValue: Updater<PaginationState>) => {
       if (typeof updaterOrValue === 'function') {
         const newPagination = updaterOrValue(pagination);
-        void setPage(newPagination.pageIndex + 1);
-        void setPerPage(newPagination.pageSize);
+        setPage(newPagination.pageIndex + 1);
+        setPerPage(newPagination.pageSize);
       } else {
-        void setPage(updaterOrValue.pageIndex + 1);
-        void setPerPage(updaterOrValue.pageSize);
+        setPage(updaterOrValue.pageIndex + 1);
+        setPerPage(updaterOrValue.pageSize);
       }
     },
     [pagination, setPage, setPerPage]
@@ -141,11 +209,31 @@ export function useDataTable<TData>(props: UseDataTableProps<TData>) {
     return new Set(columns.map((column) => column.id).filter(Boolean) as string[]);
   }, [columns]);
 
-  const [sorting, setSorting] = useQueryState(
-    SORT_KEY,
-    getSortingStateParser<TData>(columnIds)
-      .withOptions(queryStateOptions)
-      .withDefault(initialState?.sorting ?? [])
+  // Sort state from URL
+  const sortFromUrl = React.useMemo(() => {
+    const raw = getSearchParam(location.searchStr, SORT_KEY);
+    return raw ? parseSorting(raw) : (initialState?.sorting ?? []);
+  }, [location.searchStr, initialState?.sorting]);
+
+  const [sorting, setSortingState] = React.useState<ExtendedColumnSort<TData>[]>(sortFromUrl);
+
+  React.useEffect(() => {
+    setSortingState(sortFromUrl);
+  }, [sortFromUrl]);
+
+  const setSorting = React.useCallback(
+    (newSorting: ExtendedColumnSort<TData>[]) => {
+      setSortingState(newSorting);
+      const params = new URLSearchParams(location.searchStr);
+      if (newSorting.length === 0) {
+        params.delete(SORT_KEY);
+      } else {
+        params.set(SORT_KEY, serializeSorting(newSorting));
+      }
+      params.delete(PAGE_KEY); // reset page on sort change
+      replaceUrl(params.toString());
+    },
+    [location.searchStr, replaceUrl]
   );
 
   const onSortingChange = React.useCallback(
@@ -162,33 +250,57 @@ export function useDataTable<TData>(props: UseDataTableProps<TData>) {
 
   const filterableColumns = React.useMemo(() => {
     if (enableAdvancedFilter) return [];
-
     return columns.filter((column) => column.enableColumnFilter);
   }, [columns, enableAdvancedFilter]);
 
-  const filterParsers = React.useMemo(() => {
-    if (enableAdvancedFilter) return {};
+  // Filter values from URL
+  const filterFromUrl = React.useMemo(() => {
+    const params = new URLSearchParams(location.searchStr);
+    const result: Record<string, string | string[]> = {};
+    for (const col of filterableColumns) {
+      const id = col.id;
+      if (!id) continue;
+      const raw = params.get(id);
+      if (raw === null) continue;
+      if (col.meta?.options) {
+        result[id] = raw.split(ARRAY_SEPARATOR).filter(Boolean);
+      } else {
+        result[id] = raw;
+      }
+    }
+    return result;
+  }, [location.searchStr, filterableColumns]);
 
-    return filterableColumns.reduce<Record<string, Parser<string> | Parser<string[]>>>(
-      (acc, column) => {
-        if (column.meta?.options) {
-          acc[column.id ?? ''] = parseAsArrayOf(parseAsString, ARRAY_SEPARATOR).withOptions(
-            queryStateOptions
-          );
-        } else {
-          acc[column.id ?? ''] = parseAsString.withOptions(queryStateOptions);
-        }
-        return acc;
-      },
-      {}
-    );
-  }, [filterableColumns, queryStateOptions, enableAdvancedFilter]);
+  const [filterValues, setFilterValuesState] =
+    React.useState<Record<string, string | string[]>>(filterFromUrl);
 
-  const [filterValues, setFilterValues] = useQueryStates(filterParsers);
+  React.useEffect(() => {
+    setFilterValuesState(filterFromUrl);
+  }, [filterFromUrl]);
+
+  const setFilterValues = React.useCallback(
+    (values: Record<string, string | string[]>) => {
+      setFilterValuesState(values);
+      const params = new URLSearchParams(location.searchStr);
+      for (const col of filterableColumns) {
+        const id = col.id;
+        if (!id) continue;
+        params.delete(id);
+      }
+      for (const [key, value] of Object.entries(values)) {
+        if (value === null || value === undefined) continue;
+        const serialized = Array.isArray(value) ? value.join(ARRAY_SEPARATOR) : String(value);
+        if (serialized) params.set(key, serialized);
+      }
+      params.delete(PAGE_KEY);
+      replaceUrl(params.toString());
+    },
+    [location.searchStr, filterableColumns, replaceUrl]
+  );
 
   const debouncedSetFilterValues = useDebouncedCallback((values: typeof filterValues) => {
-    void setPage(1);
-    void setFilterValues(values);
+    setPage(1);
+    setFilterValues(values);
   }, debounceMs);
 
   const initialColumnFilters: ColumnFiltersState = React.useMemo(() => {

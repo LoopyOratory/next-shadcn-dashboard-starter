@@ -1,6 +1,6 @@
 'use client';
 
-import Image from 'next/image';
+import { Image } from '@unpic/react';
 import type { FC } from 'react';
 import { Icons } from '@/components/icons';
 import { cn } from '@/lib/utils';

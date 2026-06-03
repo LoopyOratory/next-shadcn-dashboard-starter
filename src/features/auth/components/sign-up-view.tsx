@@ -1,22 +1,47 @@
+'use client';
+
 import { buttonVariants } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
-import { SignUp as ClerkSignUpForm } from '@clerk/nextjs';
+import { authClient } from '@/lib/auth-client';
 import { GitHubLogoIcon } from '@radix-ui/react-icons';
 import { Icons } from '@/components/icons';
-import { Metadata } from 'next';
-import Link from 'next/link';
+import { Link, useNavigate } from '@tanstack/react-router';
 import { InteractiveGridPattern } from './interactive-grid';
-
-export const metadata: Metadata = {
-  title: 'Authentication',
-  description: 'Authentication forms built using the components.'
-};
+import { useState } from 'react';
+import { toast } from 'sonner';
 
 export default function SignUpViewPage({ stars }: { stars: number }) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const { error } = await authClient.signUp.email({ email, password, name });
+      if (error) {
+        toast.error(error.message || 'Failed to sign up');
+      } else {
+        toast.success('Account created! Please sign in.');
+        navigate({ to: '/auth/sign-in' });
+      }
+    } catch (err) {
+      toast.error('An unexpected error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className='relative h-screen flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0'>
       <Link
-        href='/examples/authentication'
+        to='/auth/sign-in'
         className={cn(
           buttonVariants({ variant: 'ghost' }),
           'absolute top-4 right-4 hidden md:top-8 md:right-8'
@@ -60,9 +85,10 @@ export default function SignUpViewPage({ stars }: { stars: number }) {
       <div className='flex h-full items-center justify-center p-4 lg:p-8'>
         <div className='flex w-full max-w-md flex-col items-center justify-center space-y-6'>
           {/* github link  */}
-          <Link
+          <a
             className={cn('group inline-flex hover:text-yellow-200')}
             target='_blank'
+            rel='noopener noreferrer'
             href={'https://github.com/kiranism/next-shadcn-dashboard-starter'}
           >
             <div className='flex items-center'>
@@ -76,43 +102,98 @@ export default function SignUpViewPage({ stars }: { stars: number }) {
               />
               <span className='font-display font-medium'>{stars}</span>
             </div>
-          </Link>
-          <ClerkSignUpForm
-            initialValues={{
-              emailAddress: 'your_mail+clerk_test@example.com'
-            }}
-          />
+          </a>
+          <Card className='w-full'>
+            <CardHeader>
+              <CardTitle>Create an Account</CardTitle>
+              <CardDescription>Enter your details to create a new account</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSignUp} className='space-y-4'>
+                <div className='space-y-2'>
+                  <Label htmlFor='name'>Name</Label>
+                  <Input
+                    id='name'
+                    name='name'
+                    type='text'
+                    placeholder='Your name'
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                    disabled={loading}
+                  />
+                </div>
+                <div className='space-y-2'>
+                  <Label htmlFor='email'>Email</Label>
+                  <Input
+                    id='email'
+                    name='email'
+                    type='email'
+                    placeholder='your@email.com'
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    disabled={loading}
+                  />
+                </div>
+                <div className='space-y-2'>
+                  <Label htmlFor='password'>Password</Label>
+                  <Input
+                    id='password'
+                    name='password'
+                    type='password'
+                    placeholder='••••••••'
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    disabled={loading}
+                  />
+                </div>
+                <button
+                  type='submit'
+                  disabled={loading}
+                  className={cn(buttonVariants({ variant: 'default' }), 'w-full')}
+                >
+                  {loading ? 'Creating account...' : 'Create Account'}
+                </button>
+              </form>
+              <div className='mt-4 text-center text-sm'>
+                Already have an account?{' '}
+                <Link to='/auth/sign-in' className='underline underline-offset-4'>
+                  Sign in
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
           <div className='text-muted-foreground space-y-2 px-8 text-center text-xs'>
             <p>
               This is an{' '}
-              <Link href='/about' className='hover:text-primary underline underline-offset-4'>
+              <Link to='/about' className='hover:text-primary underline underline-offset-4'>
                 open-source project
               </Link>{' '}
-              for demo purposes. Authentication is handled securely by Clerk.
+              for demo purposes.
             </p>
             <p>
-              <Link
+              <a
                 href='https://github.com/kiranism/next-shadcn-dashboard-starter'
                 target='_blank'
+                rel='noopener noreferrer'
                 className='hover:text-primary underline underline-offset-4'
               >
                 View on GitHub
-              </Link>
+              </a>
             </p>
           </div>
           <p className='text-muted-foreground px-8 text-center text-sm'>
             By clicking continue, you agree to our{' '}
             <Link
-              href='/terms-of-service'
+              to='/terms-of-service'
               className='hover:text-primary underline underline-offset-4'
             >
               Terms of Service
             </Link>{' '}
             and{' '}
-            <Link
-              href='/privacy-policy'
-              className='hover:text-primary underline underline-offset-4'
-            >
+            <Link to='/privacy-policy' className='hover:text-primary underline underline-offset-4'>
               Privacy Policy
             </Link>
             .

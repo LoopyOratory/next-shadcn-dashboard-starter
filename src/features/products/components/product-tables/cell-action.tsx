@@ -11,7 +11,7 @@ import {
 import { deleteProductMutation } from '../../api/mutations';
 import type { Product } from '../../api/types';
 import { Icons } from '@/components/icons';
-import { useRouter } from 'next/navigation';
+import { useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -22,7 +22,7 @@ interface CellActionProps {
 
 export function CellAction({ data }: CellActionProps) {
   const [open, setOpen] = useState(false);
-  const router = useRouter();
+  const navigate = useNavigate();
 
   const deleteMutation = useMutation({
     ...deleteProductMutation,
@@ -52,7 +52,7 @@ export function CellAction({ data }: CellActionProps) {
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end'>
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          <DropdownMenuItem onClick={() => router.push(`/dashboard/product/${data.id}`)}>
+          <DropdownMenuItem onClick={() => navigate({ to: `/dashboard/product/${data.id}` })}>
             <Icons.edit className='mr-2 h-4 w-4' /> Update
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setOpen(true)}>

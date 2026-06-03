@@ -17,7 +17,7 @@ import { cn } from '@/lib/utils';
 import { Slot } from '@radix-ui/react-slot';
 import { VariantProps, cva } from 'class-variance-authority';
 import { Icons } from '@/components/icons';
-import { usePathname } from 'next/navigation';
+import { useLocation } from '@tanstack/react-router';
 import * as React from 'react';
 
 const INFOBAR_WIDTH = '22rem';
@@ -83,7 +83,7 @@ function InfobarProvider({
   const [content, setContent] = React.useState<InfobarContent | null>(null);
   const [contentPathname, setContentPathname] = React.useState<string | null>(null);
   const [isPathnameChanging, setIsPathnameChanging] = React.useState(false);
-  const pathname = usePathname();
+  const { pathname } = useLocation();
 
   // This is the internal state of the infobar.
   // We use openProp and setOpenProp for control from outside the component.

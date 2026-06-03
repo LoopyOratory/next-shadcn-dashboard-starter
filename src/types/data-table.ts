@@ -1,6 +1,13 @@
 import type { DataTableConfig } from '@/config/data-table';
-import type { FilterItemSchema } from '@/lib/parsers';
 import type { ColumnSort, Row, RowData } from '@tanstack/react-table';
+
+export interface FilterItemSchema {
+  id: string;
+  value: string | string[];
+  variant: DataTableConfig['filterVariants'][number];
+  operator: DataTableConfig['operators'][number];
+  filterId: string;
+}
 
 declare module '@tanstack/react-table' {
   // biome-ignore lint/correctness/noUnusedVariables: Interface type parameters required by @tanstack/react-table

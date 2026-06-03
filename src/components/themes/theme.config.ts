@@ -44,5 +44,25 @@ export const THEMES = [
   {
     name: 'WhatsApp',
     value: 'whatsapp'
+  },
+  {
+    name: 'Loopy',
+    value: 'loopy'
+  },
+  {
+    name: 'Vivita',
+    value: 'vivita'
+  },
+  {
+    name: 'Henry',
+    value: 'henry'
+  },
+  {
+    name: 'Monica',
+    value: 'monica'
+  },
+  {
+    name: 'Monica-2',
+    value: 'monica-2'
   }
 ];

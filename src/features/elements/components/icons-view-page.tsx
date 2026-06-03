@@ -5,7 +5,7 @@ import { Icons } from '@/components/icons';
 import PageContainer from '@/components/layout/page-container';
 import { Input } from '@/components/ui/input';
 import { buttonVariants } from '@/components/ui/button';
-import Link from 'next/link';
+import { Link } from '@tanstack/react-router';
 
 const TABLER_ICONS_URL = 'https://tabler.io/icons';
 
@@ -33,6 +33,8 @@ export default function IconsViewPage() {
     >
       <div className='space-y-4'>
         <Input
+          id='icon-search'
+          name='icon-search'
           placeholder='Search icons...'
           value={search}
           onChange={(e) => setSearch(e.target.value)}

@@ -1,7 +1,7 @@
 'use client';
 
 import { Icons } from '@/components/icons';
-import Image from 'next/image';
+import { Image } from '@unpic/react';
 import * as React from 'react';
 import Dropzone, { type DropzoneProps, type FileRejection } from 'react-dropzone';
 import { toast } from 'sonner';
