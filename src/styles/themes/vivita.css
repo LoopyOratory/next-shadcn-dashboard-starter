@@ -101,3 +101,12 @@
   --shadow-xl: 0px 1px 2px 0px hsl(303 50% 40% / 0.18), 0px 8px 10px -1px hsl(303 50% 40% / 0.18);
   --shadow-2xl: 0px 1px 2px 0px hsl(303 50% 40% / 0.45);
 }
+
+/* Subtle frosted glass — stronger than base, softer than Monica */
+[data-theme='vivita'] [data-slot='card'],
+[data-theme='vivita'] [role='dialog'],
+[data-theme='vivita'] [data-slot='sidebar'],
+[data-theme='vivita'] [data-slot='dropdown-content'],
+[data-theme='vivita'] [data-slot='popover-content'] {
+  backdrop-filter: blur(10px) saturate(110%);
+}

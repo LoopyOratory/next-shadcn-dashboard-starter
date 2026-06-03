@@ -111,3 +111,12 @@
   --radius-3xl: 0;
   --radius-4xl: 0;
 }
+
+/* Subtle frosted glass — stronger than base, softer than Monica */
+[data-theme='henry'] [data-slot='card'],
+[data-theme='henry'] [role='dialog'],
+[data-theme='henry'] [data-slot='sidebar'],
+[data-theme='henry'] [data-slot='dropdown-content'],
+[data-theme='henry'] [data-slot='popover-content'] {
+  backdrop-filter: blur(10px) saturate(110%);
+}

@@ -207,11 +207,7 @@
 [data-theme] [data-slot='popover-content'],
 [data-theme] [data-slot='select-content'],
 [data-theme] [data-slot='command'] {
-  backdrop-filter: blur(4px) saturate(105%);
-}
-
-[data-theme] header {
-  backdrop-filter: blur(2px) saturate(100%);
+  backdrop-filter: blur(6px) saturate(105%);
 }
 
 @import './theme.css';

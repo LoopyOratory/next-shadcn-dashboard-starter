@@ -36,7 +36,7 @@ export const Route = createRootRoute({
 
 function RootLayout() {
   return (
-    <html lang='en' suppressHydrationWarning>
+    <html lang='en' suppressHydrationWarning data-theme={DEFAULT_THEME}>
       <head>
         <HeadContent />
         <script
