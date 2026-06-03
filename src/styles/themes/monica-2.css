@@ -78,13 +78,11 @@
 [data-theme='monica-2'] [data-slot='select-content'],
 [data-theme='monica-2'] [data-slot='command'] {
   backdrop-filter: blur(20px) saturate(120%);
-  -webkit-backdrop-filter: blur(20px) saturate(120%);
 }
 
 /* Softer glass for header/nav */
 [data-theme='monica-2'] header {
   backdrop-filter: blur(12px) saturate(100%);
-  -webkit-backdrop-filter: blur(12px) saturate(100%);
 }
 
 /* Dark mode — deeper glass with darker tints */
