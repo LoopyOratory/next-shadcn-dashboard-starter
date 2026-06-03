@@ -1,11 +1,8 @@
 import { betterAuth } from 'better-auth';
 import { tanstackStartCookies } from 'better-auth/tanstack-start';
-import Database from 'better-sqlite3';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import { Database } from 'bun:sqlite';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const dbPath = path.resolve(__dirname, '../../data/auth.db');
+const dbPath = process.env.AUTH_DB_PATH || 'data/auth.db';
 
 export const auth = betterAuth({
   database: new Database(dbPath),
